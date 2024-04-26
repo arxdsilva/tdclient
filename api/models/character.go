@@ -41,7 +41,7 @@ type (
 		DeletionDate      string      `json:"deletion_date"`
 		FormerNames       []string    `json:"former_names"`
 		FormerWorlds      []string    `json:"former_worlds"`
-		Guild             Guild       `json:"guild"`
+		Guild             GuildSimple `json:"guild"`
 		Houses            []HouseInfo `json:"houses"`
 		LastLogin         string      `json:"last_login"`
 		Level             int         `json:"level"`
@@ -57,7 +57,7 @@ type (
 		World             string      `json:"world"`
 	}
 
-	Guild struct {
+	GuildSimple struct {
 		Name string `json:"name"`
 		Rank string `json:"rank"`
 	}

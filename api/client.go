@@ -5,9 +5,14 @@ import (
 	"fmt"
 	"log/slog"
 	"net/http"
+	"strings"
 
 	"github.com/arxdsilva/tdclient/adapters"
 	"github.com/arxdsilva/tdclient/api/models"
+)
+
+var (
+	_ API = &client{}
 )
 
 const (
@@ -15,6 +20,8 @@ const (
 	worldsPath = "/worlds"
 
 	characterPath = "/character/%s"
+
+	guildPath = "/guild/%s"
 )
 
 type client struct {
@@ -102,6 +109,34 @@ func (c *client) GetCharacter(character string) (*models.V4GetCharacterResponse,
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetCharacter error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetGuild retrieves information about a specific guild.
+// It takes a `guildName` parameter specifying the guild to retrieve.
+// It returns a pointer to `models.V4GetGuildResponse` and an error.
+// If the request is successful, the response will contain the information about the guild.
+// If an error occurs during the request or response parsing, an error will be returned.
+func (c *client) GetGuild(guildName string) (*models.V4GetGuildResponse, error) {
+	guildName = strings.ReplaceAll(guildName, " ", "%20")
+	response, status, err := c.http.DoRequest(
+		http.MethodGet, fmt.Sprintf(guildPath, guildName), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetGuildResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetGuild error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,
