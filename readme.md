@@ -9,6 +9,8 @@ A golang client for tibiadata's API
 
 ## Usage
 
+Check `example/simple/main.go` for a working example.
+
 ```go
 package main
 import (
@@ -28,7 +30,7 @@ func main() {
     }
 
     fmt.Println("world: ", world)
-    fmt.Println("worlds":, worlds)
+    fmt.Println("worlds:", worlds)
 }
 ```
 

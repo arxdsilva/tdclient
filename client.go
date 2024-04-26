@@ -12,7 +12,7 @@ type Client struct {
 	api.API
 }
 
-func New(opts ...ClientOption) (*Client, error) {
+func New(opts ...ClientOption) *Client {
 	cfg := defaultCfg()
 	for _, opt := range opts {
 		opt(cfg)
@@ -29,5 +29,5 @@ func New(opts ...ClientOption) (*Client, error) {
 			cfg.logger,
 		),
 	}
-	return c, nil
+	return c
 }
