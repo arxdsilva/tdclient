@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"testing"
 
-	"github.com/arxdsilva/golang-ifood-sdk/mocks"
+	"github.com/arxdsilva/tdclient/mocks"
 	"github.com/stretchr/testify/assert"
 )
 
