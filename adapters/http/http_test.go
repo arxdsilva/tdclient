@@ -3,7 +3,7 @@ package httpadapter
 import (
 	"bytes"
 	"errors"
-	"io/ioutil"
+	"io"
 	"net/http"
 	"testing"
 
@@ -16,7 +16,7 @@ var clientMock = new(mocks.HttpClientMock)
 func TestHttpAdapter_Do_Success(t *testing.T) {
 	request, _ := http.NewRequest(http.MethodPost, "test/", nil)
 	json := "{message: success}"
-	body := ioutil.NopCloser(bytes.NewReader([]byte(json)))
+	body := io.NopCloser(bytes.NewReader([]byte(json)))
 	expectedResp := &http.Response{
 		StatusCode: http.StatusOK,
 		Body:       body,
