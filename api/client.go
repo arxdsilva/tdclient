@@ -13,6 +13,8 @@ import (
 const (
 	worldPath  = "/world/%s"
 	worldsPath = "/worlds"
+
+	characterPath = "/character/%s"
 )
 
 type client struct {
@@ -73,6 +75,33 @@ func (c *client) GetWorlds() (*models.V4GetWorldsResponse, error) {
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetWorlds error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetCharacter retrieves information about a specific character.
+// It takes a `character` parameter specifying the character to retrieve.
+// It returns a pointer to `models.V4GetCharacterResponse` and an error.
+// If the request is successful, the response will contain the information about the character.
+// If an error occurs during the request or response parsing, an error will be returned.
+func (c *client) GetCharacter(character string) (*models.V4GetCharacterResponse, error) {
+	response, status, err := c.http.DoRequest(
+		http.MethodGet, fmt.Sprintf(characterPath, character), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetCharacterResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetCharacter error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,

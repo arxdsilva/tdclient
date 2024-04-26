@@ -1,33 +1,13 @@
 package models
 
 type V4GetWorldsResponse struct {
-	Information struct {
-		API       APIInfo   `json:"api"`
-		Status    APIStatus `json:"status"`
-		Timestamp string    `json:"timestamp"`
-	} `json:"information"`
-	Worlds TibiaInfo `json:"worlds"`
+	Information APIInformation `json:"information"`
+	Worlds      TibiaInfo      `json:"worlds"`
 }
 
 type V4GetWorldResponse struct {
-	Information struct {
-		API       APIInfo   `json:"api"`
-		Status    APIStatus `json:"status"`
-		Timestamp string    `json:"timestamp"`
-	} `json:"information"`
-	World World `json:"world"`
-}
-
-type APIInfo struct {
-	Commit  string `json:"commit"`
-	Release string `json:"release"`
-	Version int    `json:"version"`
-}
-
-type APIStatus struct {
-	Error    int    `json:"error"`
-	HTTPCode int    `json:"http_code"`
-	Message  string `json:"message"`
+	Information APIInformation `json:"information"`
+	World       World          `json:"world"`
 }
 
 type TibiaInfo struct {
