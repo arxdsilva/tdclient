@@ -1,0 +1,5 @@
+package tdclient
+
+func New() {
+
+}
