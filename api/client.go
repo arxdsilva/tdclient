@@ -1,6 +1,7 @@
 package api
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"log/slog"
@@ -45,8 +46,8 @@ func NewClient(httpClient adapters.Http, logger *slog.Logger) *client {
 // It returns a pointer to `models.V4GetWorldResponse` and an error.
 // If the request is successful, the response will contain the information about the world.
 // If an error occurs during the request or response parsing, an error will be returned.
-func (c *client) GetWorld(world string) (*models.V4GetWorldResponse, error) {
-	response, status, err := c.http.DoRequest(
+func (c *client) GetWorld(ctx context.Context, world string) (*models.V4GetWorldResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
 		http.MethodGet, fmt.Sprintf(worldPath, world), nil, nil)
 	if err != nil {
 		return nil, err
@@ -69,8 +70,8 @@ func (c *client) GetWorld(world string) (*models.V4GetWorldResponse, error) {
 
 // GetWorlds retrieves a list of worlds from the server.
 // It returns a pointer to a V4GetWorldsResponse struct and an error, if any.
-func (c *client) GetWorlds() (*models.V4GetWorldsResponse, error) {
-	response, status, err := c.http.DoRequest(
+func (c *client) GetWorlds(ctx context.Context) (*models.V4GetWorldsResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
 		http.MethodGet, worldsPath, nil, nil)
 	if err != nil {
 		return nil, err
@@ -96,8 +97,8 @@ func (c *client) GetWorlds() (*models.V4GetWorldsResponse, error) {
 // It returns a pointer to `models.V4GetCharacterResponse` and an error.
 // If the request is successful, the response will contain the information about the character.
 // If an error occurs during the request or response parsing, an error will be returned.
-func (c *client) GetCharacter(character string) (*models.V4GetCharacterResponse, error) {
-	response, status, err := c.http.DoRequest(
+func (c *client) GetCharacter(ctx context.Context, character string) (*models.V4GetCharacterResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
 		http.MethodGet, fmt.Sprintf(characterPath, character), nil, nil)
 	if err != nil {
 		return nil, err
@@ -123,9 +124,9 @@ func (c *client) GetCharacter(character string) (*models.V4GetCharacterResponse,
 // It returns a pointer to `models.V4GetGuildResponse` and an error.
 // If the request is successful, the response will contain the information about the guild.
 // If an error occurs during the request or response parsing, an error will be returned.
-func (c *client) GetGuild(guildName string) (*models.V4GetGuildResponse, error) {
+func (c *client) GetGuild(ctx context.Context, guildName string) (*models.V4GetGuildResponse, error) {
 	guildName = strings.ReplaceAll(guildName, " ", "%20")
-	response, status, err := c.http.DoRequest(
+	response, status, err := c.http.DoRequest(ctx,
 		http.MethodGet, fmt.Sprintf(guildPath, guildName), nil, nil)
 	if err != nil {
 		return nil, err

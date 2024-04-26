@@ -2,6 +2,7 @@ package httpadapter
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -35,8 +36,9 @@ func New(client HTTPClient, baseUrl string) *httpAdapter {
 }
 
 // DoRequest is the httpAdapter requester
-func (h *httpAdapter) DoRequest(method, path string, reader io.Reader, headers map[string]string) ([]byte, int, error) {
-	request, err := http.NewRequest(method, h.baseUrl+path, reader)
+func (h *httpAdapter) DoRequest(ctx context.Context, method, path string, reader io.Reader, headers map[string]string) ([]byte, int, error) {
+	request, err := http.NewRequestWithContext(
+		ctx, method, h.baseUrl+path, reader)
 	if err != nil {
 		return nil, 0, err
 	}

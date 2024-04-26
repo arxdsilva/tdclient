@@ -26,12 +26,13 @@ import (
 
 func main() {
     client := tdclient.New()
-    world, err := client.GetWorld("Premia")
+    ctx := context.Background()
+    world, err := client.GetWorld(ctx,"Premia")
     if err != nil {
         // handle error
     }
 
-    worlds, err := client.GetWorlds()
+    worlds, err := client.GetWorlds(ctx)
     if err != nil {
         // handle error
     }
