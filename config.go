@@ -2,6 +2,8 @@ package tdclient
 
 import (
 	"log/slog"
+	"net/http"
+	"os"
 	"time"
 )
 
@@ -11,17 +13,27 @@ type Config struct {
 	Env     string
 	Version string
 	Host    string
-	timeout time.Duration
-	logger  *slog.Logger
+
+	httpClient *http.Client
+	logger     *slog.Logger
 }
 
 func defaultCfg() *Config {
+	logger := slog.New(
+		slog.NewJSONHandler(
+			os.Stdout, &slog.HandlerOptions{
+				Level: slog.LevelError,
+			})).With("app", "tdclient")
+
+	dftclient := http.DefaultClient
+	dftclient.Timeout = time.Minute
+
 	return &Config{
-		Env:     "api",
-		Version: "v4",
-		Host:    ".tibiadata.com",
-		timeout: time.Minute,
-		logger:  slog.Default(),
+		Env:        "api",
+		Version:    "v4",
+		Host:       ".tibiadata.com",
+		httpClient: dftclient,
+		logger:     logger,
 	}
 }
 
@@ -42,7 +54,28 @@ func WithEnv(env string) ClientOption {
 
 func WithTimeout(timeout time.Duration) ClientOption {
 	return func(c *Config) *Config {
-		c.timeout = timeout
+		c.httpClient.Timeout = timeout
+		return c
+	}
+}
+
+func WithLogger(lg *slog.Logger) ClientOption {
+	return func(c *Config) *Config {
+		c.logger = lg
+		return c
+	}
+}
+
+func WithLogLevel(lv slog.Level) ClientOption {
+	return func(c *Config) *Config {
+		slog.SetLogLoggerLevel(lv)
+		return c
+	}
+}
+
+func WithHTTPClient(cl *http.Client) ClientOption {
+	return func(c *Config) *Config {
+		c.httpClient = cl
 		return c
 	}
 }

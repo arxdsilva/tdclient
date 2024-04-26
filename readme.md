@@ -13,7 +13,10 @@ Check `example/simple/main.go` for a working example.
 
 ```go
 package main
+
 import (
+	"log/slog"
+
     "github.com/arxdsilva/tdclient"
 )
 
@@ -31,6 +34,20 @@ func main() {
 
     fmt.Println("world: ", world)
     fmt.Println("worlds:", worlds)
+
+    // you can also configure the client with options:
+    tdclient.New(
+        // change the env to query from
+        tdclient.WithEnv("dev"),
+        // bring your own slog logger
+        tdclient.WithLogger(customSlogger),
+        // set the debug level
+        tdclient.WithLogLevel(slog.LevelDebug),
+        // add your custom http client
+        tdclient.WithHTTPClient(http.DefaultClient), 
+        // customise the http client max timeout duration
+        tdclient.WithTimeout(time.Hour),
+    )
 }
 ```
 

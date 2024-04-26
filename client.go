@@ -1,14 +1,11 @@
 package tdclient
 
 import (
-	"net/http"
-
 	httpadapter "github.com/arxdsilva/tdclient/adapters/http"
 	"github.com/arxdsilva/tdclient/api"
 )
 
 type Client struct {
-	cfg *Config
 	api.API
 }
 
@@ -18,14 +15,9 @@ func New(opts ...ClientOption) *Client {
 		opt(cfg)
 	}
 
-	client := http.DefaultClient
-	if cfg.timeout != 0 {
-		client.Timeout = cfg.timeout
-	}
 	c := &Client{
-		cfg: cfg,
 		API: api.NewClient(
-			httpadapter.New(client, cfg.url()),
+			httpadapter.New(cfg.httpClient, cfg.url()),
 			cfg.logger,
 		),
 	}
