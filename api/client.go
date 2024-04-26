@@ -21,6 +21,9 @@ type client struct {
 	logger *slog.Logger
 }
 
+// NewClient creates a new instance of the client.
+// It takes an httpClient of type adapters.Http and a logger of type *slog.Logger as parameters.
+// It returns a pointer to the created client.
 func NewClient(httpClient adapters.Http, logger *slog.Logger) *client {
 	return &client{
 		http:   httpClient,
@@ -28,6 +31,11 @@ func NewClient(httpClient adapters.Http, logger *slog.Logger) *client {
 	}
 }
 
+// GetWorld retrieves information about a specific world.
+// It takes a `world` parameter specifying the world to retrieve.
+// It returns a pointer to `models.V4GetWorldResponse` and an error.
+// If the request is successful, the response will contain the information about the world.
+// If an error occurs during the request or response parsing, an error will be returned.
 func (c *client) GetWorld(world string) (*models.V4GetWorldResponse, error) {
 	response, status, err := c.http.DoRequest(
 		http.MethodGet, fmt.Sprintf(worldPath, world), nil, nil)
@@ -50,6 +58,8 @@ func (c *client) GetWorld(world string) (*models.V4GetWorldResponse, error) {
 	return resp, json.Unmarshal(response, resp)
 }
 
+// GetWorlds retrieves a list of worlds from the server.
+// It returns a pointer to a V4GetWorldsResponse struct and an error, if any.
 func (c *client) GetWorlds() (*models.V4GetWorldsResponse, error) {
 	response, status, err := c.http.DoRequest(
 		http.MethodGet, worldsPath, nil, nil)

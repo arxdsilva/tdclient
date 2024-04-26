@@ -9,6 +9,9 @@ type Client struct {
 	api.API
 }
 
+// New creates a new instance of the Client.
+// It accepts optional ClientOption arguments to customize the configuration.
+// Returns a pointer to the newly created Client.
 func New(opts ...ClientOption) *Client {
 	cfg := defaultCfg()
 	for _, opt := range opts {
