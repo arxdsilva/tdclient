@@ -3,13 +3,13 @@ package tdclient
 import (
 	"net/http"
 
-	"github.com/arxdsilva/tdclient/adapters"
 	httpadapter "github.com/arxdsilva/tdclient/adapters/http"
+	"github.com/arxdsilva/tdclient/api"
 )
 
 type Client struct {
-	cfg  *Config
-	http adapters.Http
+	cfg *Config
+	api.API
 }
 
 func New(opts ...ClientOption) (*Client, error) {
@@ -22,9 +22,10 @@ func New(opts ...ClientOption) (*Client, error) {
 	if cfg.timeout != 0 {
 		client.Timeout = cfg.timeout
 	}
-
-	return &Client{
-		cfg:  cfg,
-		http: httpadapter.New(client, cfg.url()),
-	}, nil
+	c := &Client{
+		cfg: cfg,
+		API: api.NewClient(
+			httpadapter.New(client, cfg.url())),
+	}
+	return c, nil
 }

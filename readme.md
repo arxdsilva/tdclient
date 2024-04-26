@@ -11,5 +11,21 @@ A golang client for tibiadata's API
 
 ```go
 // todo
+    import (
+        "github.com/arxdsilva/tdclient"
+    )
+
+    func main() {
+        client := tdclient.New()
+        world, err := client.GetWorld("Premia")
+        if err != nil {
+            // handle error
+        }
+
+        worlds, err := client.GetWorlds()
+        if err != nil {
+            // handle error
+        }
+    }
 ```
 
