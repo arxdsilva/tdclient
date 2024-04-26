@@ -1,6 +1,7 @@
 package tdclient
 
 import (
+	"log/slog"
 	"time"
 )
 
@@ -11,6 +12,7 @@ type Config struct {
 	Version string
 	Host    string
 	timeout time.Duration
+	logger  *slog.Logger
 }
 
 func defaultCfg() *Config {
@@ -19,11 +21,12 @@ func defaultCfg() *Config {
 		Version: "v4",
 		Host:    ".tibiadata.com",
 		timeout: time.Minute,
+		logger:  slog.Default(),
 	}
 }
 
 func (c *Config) url() string {
-	return "https://" + c.Env + c.Host + "/" + c.Version + "/"
+	return "https://" + c.Env + c.Host + "/" + c.Version
 }
 
 func WithEnv(env string) ClientOption {

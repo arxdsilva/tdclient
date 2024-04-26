@@ -25,7 +25,9 @@ func New(opts ...ClientOption) (*Client, error) {
 	c := &Client{
 		cfg: cfg,
 		API: api.NewClient(
-			httpadapter.New(client, cfg.url())),
+			httpadapter.New(client, cfg.url()),
+			cfg.logger,
+		),
 	}
 	return c, nil
 }
