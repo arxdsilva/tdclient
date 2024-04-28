@@ -17,12 +17,18 @@ var (
 )
 
 const (
+	// world
 	worldPath  = "/world/%s"
 	worldsPath = "/worlds"
 
+	// character
 	characterPath = "/character/%s"
 
+	// guild
 	guildPath = "/guild/%s"
+
+	// bosses
+	boostableBossesPath = "/boostablebosses"
 )
 
 type client struct {
@@ -138,6 +144,33 @@ func (c *client) GetGuild(ctx context.Context, guildName string) (*models.V4GetG
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetGuild error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetBoostableBosses retrieves information about a specific guild.
+// It takes a `guildName` parameter specifying the guild to retrieve.
+// It returns a pointer to `models.V4GetBoostableBossesResponse` and an error.
+// If the request is successful, the response will contain the information about the guild.
+// If an error occurs during the request or response parsing, an error will be returned.
+func (c *client) GetBoostableBosses(ctx context.Context) (*models.V4GetBoostableBossesResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, boostableBossesPath, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetBoostableBossesResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetBoostableBosses error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,
