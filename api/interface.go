@@ -37,4 +37,7 @@ type API interface {
 
 	// kill statistics
 	GetKillStatistics(ctx context.Context, world string) (*models.V4GetKillStatisticsResponse, error)
+
+	// spells
+	GetSpells(ctx context.Context) (*models.V4GetSpellsResponse, error)
 }

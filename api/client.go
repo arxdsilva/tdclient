@@ -47,6 +47,9 @@ const (
 
 	// kill statistics
 	killStatisticsPath string = "/killstatistics/%s"
+
+	// spells
+	spellsPath string = "/spells"
 )
 
 type client struct {
@@ -403,6 +406,32 @@ func (c *client) GetKillStatistics(ctx context.Context, world string) (*models.V
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetKillStatistics error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetSpells retrieves a list of spells from the server.
+// It sends an HTTP GET request to the spells endpoint and parses the response into a V4GetSpellsResponse object.
+// If the request is successful and the response status code is 200 OK, it returns the parsed response.
+// Otherwise, it logs an error message and returns an error.
+func (c *client) GetSpells(ctx context.Context) (*models.V4GetSpellsResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, spellsPath, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetSpellsResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetSpells error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,
