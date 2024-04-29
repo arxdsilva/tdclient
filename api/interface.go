@@ -40,4 +40,5 @@ type API interface {
 
 	// spells
 	GetSpells(ctx context.Context) (*models.V4GetSpellsResponse, error)
+	GetSpell(ctx context.Context, spellID string) (*models.V4GetSpellResponse, error)
 }

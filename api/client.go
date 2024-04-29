@@ -49,6 +49,7 @@ const (
 	killStatisticsPath string = "/killstatistics/%s"
 
 	// spells
+	spellPath  string = "/spell/%s"
 	spellsPath string = "/spells"
 )
 
@@ -432,6 +433,32 @@ func (c *client) GetSpells(ctx context.Context) (*models.V4GetSpellsResponse, er
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetSpells error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetSpell retrieves a spell by its ID.
+// It takes a context, `ctx`, for cancellation and deadline propagation,
+// and a string representing the spell ID.
+// It returns a pointer to `models.V4GetSpellResponse` and an error.
+func (c *client) GetSpell(ctx context.Context, spellID string) (*models.V4GetSpellResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, fmt.Sprintf(spellPath, spellID), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetSpellResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetSpell error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,
