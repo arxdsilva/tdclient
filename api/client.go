@@ -31,7 +31,8 @@ const (
 	boostableBossesPath = "/boostablebosses"
 
 	// creatures
-	creaturesPath = "/creature"
+	creaturesPath     = "/creatures"
+	creaturesRacePath = "/creature/%s"
 )
 
 type client struct {
@@ -200,6 +201,33 @@ func (c *client) GetCreatures(ctx context.Context) (*models.V4GetCreaturesRespon
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetCreatures error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetCreatureByName retrieves a creature by its name.
+// It takes a context, `ctx`, for cancellation and deadline propagation,
+// and a string, `name`, representing the name of the creature to retrieve.
+// It returns a pointer to `models.V4GetCreatureByNameResponse` and an error.
+func (c *client) GetCreatureByName(ctx context.Context, name string) (*models.V4GetCreatureByNameResponse, error) {
+	creatureName := strings.ReplaceAll(strings.ToLower(name), " ", "%20")
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, fmt.Sprintf(creaturesRacePath, creatureName), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetCreatureByNameResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetCreatureByName error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,

@@ -13,4 +13,5 @@ type API interface {
 	GetGuild(ctx context.Context, guildName string) (*models.V4GetGuildResponse, error)
 	GetBoostableBosses(ctx context.Context) (*models.V4GetBoostableBossesResponse, error)
 	GetCreatures(ctx context.Context) (*models.V4GetCreaturesResponse, error)
+	GetCreatureByName(ctx context.Context, name string) (*models.V4GetCreatureByNameResponse, error)
 }
