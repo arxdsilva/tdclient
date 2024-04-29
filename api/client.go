@@ -236,3 +236,27 @@ func (c *client) GetCreatureByName(ctx context.Context, name string) (*models.V4
 	}
 	return resp, nil
 }
+
+// GetFansites retrieves a list of fansites from the server.
+// It returns a pointer to a V4GetFansitesResponse struct and an error, if any.
+func (c *client) GetFansites(ctx context.Context) (*models.V4GetFansitesResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, creaturesPath, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetFansitesResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Fansites.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetCreatures error",
+			"http_status", status,
+			"api_status_message", resp.Fansites.Information.Status.Message,
+			"api_status_error", resp.Fansites.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
