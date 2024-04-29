@@ -29,6 +29,9 @@ const (
 
 	// bosses
 	boostableBossesPath = "/boostablebosses"
+
+	// creatures
+	creaturesPath = "/creature"
 )
 
 type client struct {
@@ -171,6 +174,32 @@ func (c *client) GetBoostableBosses(ctx context.Context) (*models.V4GetBoostable
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetBoostableBosses error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetCreatures retrieves a list of creatures from the server.
+// It sends an HTTP GET request to the creatures endpoint and parses the response into a V4GetCreaturesResponse object.
+// If the request is successful and the response status code is 200 OK, it returns the parsed response.
+// Otherwise, it logs an error message and returns an error.
+func (c *client) GetCreatures(ctx context.Context) (*models.V4GetCreaturesResponse, error) {
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, creaturesPath, nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetCreaturesResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetCreatures error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,
