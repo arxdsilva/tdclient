@@ -44,6 +44,9 @@ const (
 	// houses
 	houseIDPath string = "/house/%s/%s"
 	housesPath  string = "/houses/%s/%s"
+
+	// kill statistics
+	killStatisticsPath string = "/killstatistics/%s"
 )
 
 type client struct {
@@ -373,6 +376,33 @@ func (c *client) GetHouseByWorldAndID(ctx context.Context, world, houseID string
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetHousesByWorldTown error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetKillStatistics retrieves the kill statistics for a specific world.
+// It takes a context, `ctx`, for cancellation and deadline propagation,
+// and a string representing the world.
+// It returns a pointer to `models.V4GetKillStatisticsResponse` and an error.
+func (c *client) GetKillStatistics(ctx context.Context, world string) (*models.V4GetKillStatisticsResponse, error) {
+	world = strings.ToLower(world)
+	response, status, err := c.http.DoRequest(ctx, http.MethodGet,
+		fmt.Sprintf(killStatisticsPath, world), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetKillStatisticsResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetKillStatistics error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,

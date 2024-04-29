@@ -34,4 +34,7 @@ type API interface {
 	// houses
 	GetHousesByWorldTown(ctx context.Context, world, town string) (*models.V4GetHousesByWorldAndTownResponse, error)
 	GetHouseByWorldAndID(ctx context.Context, world, houseID string) (*models.V4GetHouseByTownIDResponse, error)
+
+	// kill statistics
+	GetKillStatistics(ctx context.Context, world string) (*models.V4GetKillStatisticsResponse, error)
 }
