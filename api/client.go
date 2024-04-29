@@ -40,6 +40,10 @@ const (
 
 	// highscores
 	highscoresPath string = "/highscores/%s/%s/%s/%d"
+
+	// houses
+	houseIDPath string = "/house/%s/%s"
+	housesPath  string = "/houses/%s/%s"
 )
 
 type client struct {
@@ -313,6 +317,62 @@ func (c *client) GetHighScores(ctx context.Context, world, category, vocation st
 	if status != http.StatusOK ||
 		resp.Information.Status.HTTPCode != http.StatusOK {
 		c.logger.Error("GetHighScores error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetHousesByWorldTown retrieves a list of houses from the server.
+// It takes a context, `ctx`, for cancellation and deadline propagation,
+// and strings representing the world and town.
+// It returns a pointer to `models.V4GetHousesByWorldAndTownResponse` and an error.
+func (c *client) GetHousesByWorldTown(ctx context.Context, world, town string) (*models.V4GetHousesByWorldAndTownResponse, error) {
+	world = strings.ToLower(world)
+	town = strings.ToLower(town)
+	response, status, err := c.http.DoRequest(ctx, http.MethodGet,
+		fmt.Sprintf(housesPath, world, town), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetHousesByWorldAndTownResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetHousesByWorldTown error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetHouseByWorldAndID retrieves a house by its world and ID.
+// It takes a context, the world name, and the house ID as parameters.
+// The function returns a pointer to a `V4GetHouseByTownIDResponse` struct and an error.
+// The `V4GetHouseByTownIDResponse` struct represents the response from the API.
+// If an error occurs during the request or the response status is not OK, an error is returned.
+func (c *client) GetHouseByWorldAndID(ctx context.Context, world, houseID string) (*models.V4GetHouseByTownIDResponse, error) {
+	world = strings.ToLower(world)
+	response, status, err := c.http.DoRequest(ctx, http.MethodGet,
+		fmt.Sprintf(houseIDPath, world, houseID), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetHouseByTownIDResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetHousesByWorldTown error",
 			"http_status", status,
 			"api_status_message", resp.Information.Status.Message,
 			"api_status_error", resp.Information.Status.Error,

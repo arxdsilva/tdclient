@@ -7,6 +7,7 @@ import (
 )
 
 type API interface {
+	// worlds
 	GetWorld(ctx context.Context, world string) (*models.V4GetWorldResponse, error)
 	GetWorlds(ctx context.Context) (*models.V4GetWorldsResponse, error)
 
@@ -29,4 +30,8 @@ type API interface {
 
 	// highscores
 	GetHighScores(ctx context.Context, world, category, vocation string, page int) (*models.V4GetHighScores, error)
+
+	// houses
+	GetHousesByWorldTown(ctx context.Context, world, town string) (*models.V4GetHousesByWorldAndTownResponse, error)
+	GetHouseByWorldAndID(ctx context.Context, world, houseID string) (*models.V4GetHouseByTownIDResponse, error)
 }
