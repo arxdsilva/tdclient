@@ -157,6 +157,34 @@ func (c *client) GetGuild(ctx context.Context, guildName string) (*models.V4GetG
 	return resp, nil
 }
 
+// GetGuilds retrieves information about a specific guild.
+// It takes a `guildName` parameter specifying the guild to retrieve.
+// It returns a pointer to `models.V4GetGuildResponse` and an error.
+// If the request is successful, the response will contain the information about the guild.
+// If an error occurs during the request or response parsing, an error will be returned.
+func (c *client) GetGuilds(ctx context.Context, world string) (*models.V4GetGuildsResponse, error) {
+	world = strings.ToLower(world)
+	response, status, err := c.http.DoRequest(ctx,
+		http.MethodGet, fmt.Sprintf(guildPath, world), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetGuildsResponse{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetGuilds error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
 // GetBoostableBosses retrieves information about a specific guild.
 // It takes a `guildName` parameter specifying the guild to retrieve.
 // It returns a pointer to `models.V4GetBoostableBossesResponse` and an error.
@@ -251,7 +279,7 @@ func (c *client) GetFansites(ctx context.Context) (*models.V4GetFansitesResponse
 	}
 	if status != http.StatusOK ||
 		resp.Fansites.Information.Status.HTTPCode != http.StatusOK {
-		c.logger.Error("GetCreatures error",
+		c.logger.Error("GetFansites error",
 			"http_status", status,
 			"api_status_message", resp.Fansites.Information.Status.Message,
 			"api_status_error", resp.Fansites.Information.Status.Error,

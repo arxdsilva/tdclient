@@ -42,4 +42,19 @@ type (
 		Joined   string `json:"joined"`
 		Status   string `json:"status"`
 	}
+
+	V4GetGuildsResponse struct {
+		Guilds struct {
+			Active    []GuildDescription `json:"active"`
+			Formation []GuildDescription `json:"formation"`
+			World     string             `json:"world"`
+		} `json:"guilds"`
+		Information APIInformation `json:"information"`
+	}
+
+	GuildDescription struct {
+		Description string `json:"description"`
+		LogoURL     string `json:"logo_url"`
+		Name        string `json:"name"`
+	}
 )
