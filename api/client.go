@@ -18,21 +18,28 @@ var (
 
 const (
 	// world
-	worldPath  = "/world/%s"
-	worldsPath = "/worlds"
+	worldPath  string = "/world/%s"
+	worldsPath string = "/worlds"
 
 	// character
-	characterPath = "/character/%s"
+	characterPath string = "/character/%s"
 
 	// guild
-	guildPath = "/guild/%s"
+	guildPath         string = "/guilds/%s"
+	guildsInWorldPath string = "/guilds/%s"
 
 	// bosses
-	boostableBossesPath = "/boostablebosses"
+	boostableBossesPath string = "/boostablebosses"
 
 	// creatures
-	creaturesPath     = "/creatures"
-	creaturesRacePath = "/creature/%s"
+	creaturesPath       string = "/creatures"
+	creaturesByNamePath string = "/creature/%s"
+
+	// fansites
+	fansitesPath string = "/fansites"
+
+	// highscores
+	highscoresPath string = "/highscores/%s/%s/%s/%d"
 )
 
 type client struct {
@@ -165,7 +172,7 @@ func (c *client) GetGuild(ctx context.Context, guildName string) (*models.V4GetG
 func (c *client) GetGuilds(ctx context.Context, world string) (*models.V4GetGuildsResponse, error) {
 	world = strings.ToLower(world)
 	response, status, err := c.http.DoRequest(ctx,
-		http.MethodGet, fmt.Sprintf(guildPath, world), nil, nil)
+		http.MethodGet, fmt.Sprintf(guildsInWorldPath, world), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -245,7 +252,7 @@ func (c *client) GetCreatures(ctx context.Context) (*models.V4GetCreaturesRespon
 func (c *client) GetCreatureByName(ctx context.Context, name string) (*models.V4GetCreatureByNameResponse, error) {
 	creatureName := strings.ReplaceAll(strings.ToLower(name), " ", "%20")
 	response, status, err := c.http.DoRequest(ctx,
-		http.MethodGet, fmt.Sprintf(creaturesRacePath, creatureName), nil, nil)
+		http.MethodGet, fmt.Sprintf(creaturesByNamePath, creatureName), nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -269,7 +276,7 @@ func (c *client) GetCreatureByName(ctx context.Context, name string) (*models.V4
 // It returns a pointer to a V4GetFansitesResponse struct and an error, if any.
 func (c *client) GetFansites(ctx context.Context) (*models.V4GetFansitesResponse, error) {
 	response, status, err := c.http.DoRequest(ctx,
-		http.MethodGet, creaturesPath, nil, nil)
+		http.MethodGet, fansitesPath, nil, nil)
 	if err != nil {
 		return nil, err
 	}
@@ -283,6 +290,32 @@ func (c *client) GetFansites(ctx context.Context) (*models.V4GetFansitesResponse
 			"http_status", status,
 			"api_status_message", resp.Fansites.Information.Status.Message,
 			"api_status_error", resp.Fansites.Information.Status.Error,
+		)
+		return nil, err
+	}
+	return resp, nil
+}
+
+// GetHighScores retrieves the high scores for a specific world, category, vocation, and page.
+// It takes a context, `ctx`, for cancellation and deadline propagation,
+// and strings representing the world, category, vocation, and page.
+// It returns a pointer to `models.V4GetHighScores` and an error.
+func (c *client) GetHighScores(ctx context.Context, world, category, vocation string, page int) (*models.V4GetHighScores, error) {
+	response, status, err := c.http.DoRequest(ctx, http.MethodGet,
+		fmt.Sprintf(highscoresPath, world, category, vocation, page), nil, nil)
+	if err != nil {
+		return nil, err
+	}
+	resp := &models.V4GetHighScores{}
+	if err := json.Unmarshal(response, resp); err != nil {
+		return nil, err
+	}
+	if status != http.StatusOK ||
+		resp.Information.Status.HTTPCode != http.StatusOK {
+		c.logger.Error("GetHighScores error",
+			"http_status", status,
+			"api_status_message", resp.Information.Status.Message,
+			"api_status_error", resp.Information.Status.Error,
 		)
 		return nil, err
 	}
